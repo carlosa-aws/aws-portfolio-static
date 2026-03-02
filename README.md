@@ -18,10 +18,25 @@ Linux CLI
 
 🏗 Architecture Overview
 
-Terraform provisions AWS resources
-Remote state is stored in an S3 bucket
-Infrastructure is managed declaratively
-Version control via GitHub repository
+This project provisions a fully serverless static portfolio site using AWS and Terraform.
+
+### Components
+
+- **Amazon S3** – Hosts static website files
+- **Amazon CloudFront** – Serves the website globally with CDN caching
+- **AWS Lambda (Python 3.11)** – Visitor counter function
+- **Amazon DynamoDB** – Stores visitor count
+- **Amazon API Gateway** – Exposes the Lambda function as an HTTP endpoint
+- **IAM Roles & Policies** – Grants Lambda access to DynamoDB
+
+### Request Flow
+
+Browser  
+→ CloudFront  
+→ S3 (static site)  
+→ API Gateway  
+→ Lambda (visitor counter)  
+→ DynamoDB (increments + returns count)
 
 🔐 Remote Backend Configuration
 
@@ -53,13 +68,15 @@ Better production readiness
 📁 Project Structure
 
 aws-portfolio-static/
-│
-├── main.tf
-├── variables.tf
-├── outputs.tf
-├── backend.tf
-├── .gitignore
-└── README.md
+├─ infra/                  # Terraform infrastructure code
+│  ├─ main.tf              # Lambda, DynamoDB, IAM, API Gateway, S3, CloudFront
+│  └─ versions.tf          # Terraform + provider version constraints
+├─ lambda/                 # Visitor counter Lambda function source code
+│  └─ visitor.py
+├─ site/                   # Static website assets
+│  └─ index.html
+├─ .gitignore
+└─ README.md
 
 🔄 Git Workflow
 
