@@ -77,6 +77,10 @@ Fixed src refspec main does not match any
 Resolved .git/config.lock permission issue in CloudShell
 Successfully pushed project to GitHub
 
+🛠 Operational Maintenance
+
+Upgraded AWS Lambda runtime from Python 3.9 to Python 3.11 following AWS Health deprecation notice. Performed update via Terraform, validated infrastructure drift, and re-tested API Gateway integration.
+
 🛠 Key Learning Outcomes
 
 Implemented Terraform remote backend (S3)
