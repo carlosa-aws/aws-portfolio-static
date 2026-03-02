@@ -80,7 +80,7 @@ resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
 resource "aws_lambda_function" "visitor_lambda" {
   function_name = "visitor-counter"
 
-  runtime = "python3.9"
+  runtime = "python3.11"
   handler = "visitor.lambda_handler"
   role    = aws_iam_role.lambda_role.arn
 

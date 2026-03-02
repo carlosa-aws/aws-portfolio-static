@@ -1,3 +1,4 @@
+
 terraform {
   required_providers {
     aws = {
@@ -8,5 +9,13 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.0"
     }
+  }
+
+  backend "s3" {
+    bucket         = "carlos-portfolio-927b3aff"
+    key            = "portfolio/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
   }
 }
