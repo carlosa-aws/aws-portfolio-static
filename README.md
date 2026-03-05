@@ -8,15 +8,18 @@ The site includes a **visitor counter powered by AWS Lambda and DynamoDB**, demo
 
 # Architecture Overview
 
+![Architecture Overview](docs/images/01-architecture-overview.png)
+
 This project implements a fully serverless architecture.
 
 Services used:
 
-- Amazon S3 – static website hosting
-- Amazon CloudFront – CDN and HTTPS delivery
+- Amazon CloudFront – CDN serving the website
+- Amazon S3 - static website hosting
+- Amazon API Gateway - Public API endpoint for visitor counter
 - AWS Lambda – serverless visitor counter
 - Amazon DynamoDB – NoSQL database storing visitor counts
-- Terraform – Infrastructure as Code
+- Terraform – Infrastructure as Code to provision AWS resources
 
 Architecture flow:
 
