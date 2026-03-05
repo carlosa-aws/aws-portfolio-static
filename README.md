@@ -1,136 +1,187 @@
-AWS Static Website Portfolio – Terraform Project
+# AWS Serverless Portfolio Website
 
-📌 Project Overview
+A serverless personal portfolio website hosted on AWS using **S3, CloudFront, Lambda, DynamoDB, and Terraform**.
 
-This project demonstrates deploying and managing AWS infrastructure using Terraform with a remote backend stored in Amazon S3.
-The goal of this project is to showcase Infrastructure as Code (IaC) best practices, remote state management, Git workflow integration, and AWS resource provisioning.
-This portfolio project is part of my transition into cloud engineering and AWS architecture roles.
+The site includes a **visitor counter powered by AWS Lambda and DynamoDB**, demonstrating a real-world serverless architecture.
 
-🧰 Technologies Used
+---
 
-AWS
-Terraform
-Amazon S3
-Git & GitHub
-AWS CloudShell
-IAM
-Linux CLI
+# Architecture Overview
 
-🏗 Architecture Overview
+This project implements a fully serverless architecture.
 
-This project provisions a fully serverless static portfolio site using AWS and Terraform.
+Services used:
 
-### Components
+- Amazon S3 – static website hosting
+- Amazon CloudFront – CDN and HTTPS delivery
+- AWS Lambda – serverless visitor counter
+- Amazon DynamoDB – NoSQL database storing visitor counts
+- Terraform – Infrastructure as Code
 
-- **Amazon S3** – Hosts static website files
-- **Amazon CloudFront** – Serves the website globally with CDN caching
-- **AWS Lambda (Python 3.11)** – Visitor counter function
-- **Amazon DynamoDB** – Stores visitor count
-- **Amazon API Gateway** – Exposes the Lambda function as an HTTP endpoint
-- **IAM Roles & Policies** – Grants Lambda access to DynamoDB
+Architecture flow:
 
-### Request Flow
+1. User visits the website
+2. CloudFront serves the static site from S3
+3. JavaScript calls a Lambda function
+4. Lambda updates DynamoDB visitor count
+5. Updated visitor count is returned to the website
 
-Browser  
-→ CloudFront  
-→ S3 (static site)  
-→ API Gateway  
-→ Lambda (visitor counter)  
-→ DynamoDB (increments + returns count)
+---
 
-🔐 Remote Backend Configuration
+# Live Website
 
-Initially, Terraform state was stored locally.
-The backend was later migrated to an S3 remote backend to follow best practices.
-Backend Configuration Example:
-terraform {
-  backend "s3" {
-    bucket         = "your-terraform-state-bucket"
-    key            = "global/s3/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-  }
-}
+![Live Website](docs/images/13-live-site.png)
 
-State Migration
-During initialization:
-terraform init
-Terraform detected existing local state and prompted:
-Do you want to copy existing state to the new backend?
-Selecting yes migrated the local state to S3.
+---
 
-This ensures:
-Centralized state storage
-Team collaboration readiness
-Improved reliability
-Better production readiness
+# CloudFront Distribution
 
-📁 Project Structure
+CloudFront delivers the site globally and securely via HTTPS.
 
-aws-portfolio-static/
-├─ infra/                  # Terraform infrastructure code
-│  ├─ main.tf              # Lambda, DynamoDB, IAM, API Gateway, S3, CloudFront
-│  └─ versions.tf          # Terraform + provider version constraints
-├─ lambda/                 # Visitor counter Lambda function source code
-│  └─ visitor.py
-├─ site/                   # Static website assets
-│  └─ index.html
-├─ .gitignore
-└─ README.md
+![CloudFront Distribution Overview](docs/images/02-cloudfront-distribution-overview.png)
 
-🔄 Git Workflow
+## Origin Access Control (OAC)
 
-Initialized repository:
-git init
-git add .
-git commit -m "Initial commit"
+CloudFront accesses the S3 bucket privately using Origin Access Control.
 
-Connected to GitHub:
-git remote add origin https://github.com/<username>/aws-portfolio-static.git
-git push -u origin main
+![CloudFront Origin OAC](docs/images/03-cloudfront-origin-oac.png)
 
-Issues Resolved
-Fixed src refspec main does not match any
-Resolved .git/config.lock permission issue in CloudShell
-Successfully pushed project to GitHub
+---
 
-🛠 Operational Maintenance
+# S3 Private Static Site
 
-Upgraded AWS Lambda runtime from Python 3.9 to Python 3.11 following AWS Health deprecation notice. Performed update via Terraform, validated infrastructure drift, and re-tested API Gateway integration.
+The static site is stored in a **private S3 bucket**. Public access is blocked and only CloudFront can access the bucket.
 
-🛠 Key Learning Outcomes
+![S3 Bucket Overview](docs/images/04-s3-private-bucket-overview.png)
 
-Implemented Terraform remote backend (S3)
-Migrated local Terraform state to S3
-Understood Terraform state lifecycle
-Troubleshot Git configuration issues in CloudShell
-Applied infrastructure version control best practices
-Strengthened CLI and AWS troubleshooting skills
+![S3 Bucket Permissions](docs/images/05-s3-private-bucket-permissions.png)
 
-🎯 Why This Project Matters
+---
 
-This project demonstrates:
-Real-world Infrastructure as Code implementation
-Secure and scalable state management
-Git version control in cloud environments
-Practical AWS + Terraform integration
+# AWS Lambda Visitor Counter
 
-It reflects production-ready thinking rather than just lab experimentation.
+A Python Lambda function increments and retrieves the visitor count stored in DynamoDB.
 
-📈 Next Improvements
+![Lambda Overview](docs/images/06-lambda-overview.png)
 
-Planned enhancements:
-Add DynamoDB state locking
-Add CI/CD pipeline (GitHub Actions)
-Implement IAM least-privilege policies
-Add custom domain with Route 53
-CloudFront distribution
-Add automated destroy workflow
+## Lambda Test Execution
 
-👨‍💻 About Me
+![Lambda Test Execution](docs/images/07-lambda-visitor-counter-test-execution.png)
 
-I’m transitioning into cloud engineering with:
-AWS Certified Solutions Architect – Associate
+---
+
+# DynamoDB Visitor Counter Table
+
+Visitor counts are stored in a DynamoDB table.
+
+![DynamoDB Overview](docs/images/08-dynamodb-overview.png)
+
+![Visitor Counter Table](docs/images/09-dynamodb-visitor-table.png)
+
+---
+
+# Infrastructure as Code (Terraform)
+
+Terraform is used to provision and manage AWS resources.
+
+## Terraform Initialization
+
+![Terraform Init Success](docs/images/10-terraform-init-success.png)
+
+## Terraform Backend Configuration
+
+![Terraform Backend File](docs/images/11-terraform-backend-file.png)
+
+![Terraform Remote Backend](docs/images/12-terraform-remote-backend.png)
+
+---
+
+# Project Structure
+
+aws-portfolio-static
+
+infra/
+- main.tf
+- versions.tf
+
+lambda/
+- visitor_counter.py
+
+site/
+- index.html
+
+docs/
+- images/
+
+---
+
+# Security Best Practices Implemented
+
+- S3 bucket **public access blocked**
+- Access restricted via **CloudFront Origin Access Control**
+- Lambda uses **least privilege IAM permissions**
+- DynamoDB access restricted to Lambda execution role
+- Infrastructure managed through **Terraform**
+
+---
+
+# Future Improvements
+
+Planned enhancements for the project include:
+
+## CI/CD Pipeline
+
+Implement automated deployments using:
+
+- GitHub Actions
+- Terraform automation
+- Infrastructure validation
+
+## Contact Form
+
+Add a serverless contact form using:
+
+- API Gateway
+- AWS Lambda
+- DynamoDB
+
+This will allow visitors to send messages directly through the portfolio site.
+
+## Monitoring and Logging
+
+Add observability tools such as:
+
+- CloudWatch dashboards
+- CloudWatch alarms
+
+---
+
+# Cost
+
+This architecture runs **within AWS Free Tier for low traffic**.
+
+Estimated monthly cost after free tier:
+
+$0 – $3 per month
+
+---
+
+# Skills Demonstrated
+
+- AWS Serverless Architecture
+- CloudFront CDN configuration
+- Secure S3 architecture
+- AWS Lambda development (Python)
+- DynamoDB data persistence
+- Infrastructure as Code (Terraform)
+- Git and GitHub workflow
+
+---
+
+# Author
+
+Carlos Alers-Fuentes
+
+AWS Certified Solutions Architect – Associate  
 CompTIA Network+
-Hands-on AWS + Terraform projects
-This repository is part of my active cloud portfolio development.
+
