@@ -3,9 +3,21 @@
 *.tfstate
 *.tfstate.*
 .terraform.lock.hcl
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+terraform.tfvars
+terraform.tfvars.json
 
-# OS
+# Environment variables
+.env
+.env.*
+
+# OS Files
 .DS_Store
+._*
 
 # Logs
 *.log
