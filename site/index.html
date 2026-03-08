@@ -1,369 +1,317 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Carlos Alers-Fuentes | AWS Cloud Portfolio</title>
-  <meta
-    name="description"
-    content="AWS cloud portfolio project built with Terraform, S3, CloudFront, Lambda, and DynamoDB."
-  />
-  <style>
-    :root {
-      --bg: #f4f7fb;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --accent: #2563eb;
-      --accent-dark: #1d4ed8;
-      --border: #e5e7eb;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      --radius: 16px;
-      --max-width: 1000px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<title>Carlos Alers-Fuentes | AWS Cloud Portfolio</title>
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
-      color: var(--text);
-      line-height: 1.6;
-    }
+<meta name="description" content="AWS cloud portfolio project built with Terraform, S3, CloudFront, Lambda, and DynamoDB.">
 
-    a {
-      color: var(--accent);
-      text-decoration: none;
-    }
+<style>
 
-    a:hover {
-      color: var(--accent-dark);
-      text-decoration: underline;
-    }
+:root {
+  --bg: #f4f7fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --accent: #2563eb;
+  --border: #e5e7eb;
+  --shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
 
-    .container {
-      width: 90%;
-      max-width: var(--max-width);
-      margin: 0 auto;
-    }
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
 
-    .hero {
-      padding: 72px 0 40px;
-    }
+body{
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+background:var(--bg);
+color:var(--text);
+line-height:1.6;
+}
 
-    .hero-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 40px 32px;
-    }
+.container{
+width:90%;
+max-width:1000px;
+margin:auto;
+}
 
-    .eyebrow {
-      display: inline-block;
-      font-size: 0.9rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 14px;
-    }
+.hero{
+padding:70px 0 40px 0;
+}
 
-    h1 {
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      line-height: 1.15;
-      margin-bottom: 14px;
-    }
+.hero-card{
+background:white;
+padding:40px;
+border-radius:14px;
+box-shadow:var(--shadow);
+}
 
-    .subtitle {
-      font-size: 1.1rem;
-      color: var(--muted);
-      max-width: 700px;
-      margin-bottom: 24px;
-    }
+h1{
+font-size:2.8rem;
+margin-bottom:10px;
+}
 
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
+.subtitle{
+color:var(--muted);
+margin-bottom:25px;
+}
 
-    .btn {
-      display: inline-block;
-      padding: 12px 18px;
-      border-radius: 10px;
-      font-weight: 600;
-      border: 1px solid transparent;
-      transition: 0.2s ease;
-    }
+.btn{
+display:inline-block;
+padding:12px 18px;
+border-radius:8px;
+font-weight:600;
+margin-right:10px;
+}
 
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-    }
+.btn-primary{
+background:var(--accent);
+color:white;
+text-decoration:none;
+}
 
-    .btn-primary:hover {
-      background: var(--accent-dark);
-      color: white;
-      text-decoration: none;
-    }
+.btn-secondary{
+background:white;
+border:1px solid var(--border);
+color:black;
+text-decoration:none;
+}
 
-    .btn-secondary {
-      background: white;
-      border-color: var(--border);
-      color: var(--text);
-    }
+.visitor-box{
+margin-top:20px;
+font-weight:600;
+}
 
-    .btn-secondary:hover {
-      background: #f9fafb;
-      text-decoration: none;
-    }
+.section{
+padding:20px 0;
+}
 
-    .visitor-box {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: #eff6ff;
-      color: #1e3a8a;
-      border: 1px solid #bfdbfe;
-      border-radius: 999px;
-      padding: 10px 16px;
-      font-weight: 600;
-    }
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+}
 
-    .section {
-      padding: 20px 0 12px;
-    }
+.card{
+background:white;
+padding:25px;
+border-radius:14px;
+box-shadow:var(--shadow);
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 20px;
-      margin-bottom: 24px;
-    }
+.card h2{
+margin-bottom:12px;
+}
 
-    .card {
-      grid-column: span 12;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 28px 24px;
-    }
+.stack{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+margin-top:10px;
+}
 
-    .card h2 {
-      font-size: 1.4rem;
-      margin-bottom: 12px;
-    }
+.tag{
+background:#f3f4f6;
+padding:7px 12px;
+border-radius:20px;
+font-size:.9rem;
+}
 
-    .card p {
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
+.architecture-image{
+width:100%;
+max-width:900px;
+margin-top:20px;
+border-radius:12px;
+box-shadow:var(--shadow);
+}
 
-    .card ul {
-      padding-left: 20px;
-      color: var(--text);
-    }
+.image-caption{
+text-align:center;
+color:var(--muted);
+margin-top:10px;
+font-size:.9rem;
+}
 
-    .card li + li {
-      margin-top: 8px;
-    }
+footer{
+margin-top:40px;
+padding:20px;
+text-align:center;
+color:var(--muted);
+}
 
-    .stack {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
+@media(max-width:800px){
+.grid{
+grid-template-columns:1fr;
+}
+}
 
-    .tag {
-      background: #f3f4f6;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 0.95rem;
-      font-weight: 600;
-    }
-
-    .two-col {
-      grid-column: span 6;
-    }
-
-    footer {
-      padding: 24px 0 50px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    @media (max-width: 768px) {
-      .hero {
-        padding-top: 40px;
-      }
-
-      .hero-card,
-      .card {
-        padding: 24px 20px;
-      }
-
-      .two-col {
-        grid-column: span 12;
-      }
-    }
-  </style>
+</style>
 </head>
+
 <body>
-  <main>
-    <section class="hero">
-      <div class="container">
-        <div class="hero-card">
-          <div class="eyebrow">AWS Cloud Portfolio</div>
-          <h1>Carlos Alers-Fuentes</h1>
-          <p class="subtitle">
-            A static cloud portfolio site deployed on AWS using Terraform,
-            CloudFront, S3, Lambda, and DynamoDB. This project demonstrates
-            serverless architecture, infrastructure as code, and a live visitor counter.
-          </p>
 
-          <div class="hero-actions">
-            <a
-              class="btn btn-primary"
-              href="https://github.com/carlosa-aws/aws-portfolio-static"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View GitHub Repository
-            </a>
+<section class="hero">
+<div class="container">
 
-            <a
-              class="btn btn-secondary"
-              href="www.linkedin.com/in/carlosalersfuentes"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View LinkedIn
-            </a>
-          </div>
+<div class="hero-card">
 
-          <div class="visitor-box">
-            <span>Visitor Count:</span>
-            <span id="visitor-count">Loading...</span>
-          </div>
-        </div>
-      </div>
-    </section>
+<h1>Carlos Alers-Fuentes</h1>
 
-    <section class="section">
-      <div class="container">
-        <div class="grid">
-          <div class="card">
-            <h2>About This Project</h2>
-            <p>
-              This portfolio was built to showcase hands-on AWS and Terraform skills.
-              The frontend is served securely through CloudFront, while a Lambda function
-              updates and returns the visitor count stored in DynamoDB.
-            </p>
-            <p>
-              Infrastructure is managed as code with Terraform, making the deployment
-              repeatable and easier to maintain.
-            </p>
-          </div>
+<p class="subtitle">
+AWS Cloud Portfolio Project demonstrating serverless architecture,
+Infrastructure as Code with Terraform, and AWS cloud services.
+</p>
 
-          <div class="card two-col">
-            <h2>Architecture Highlights</h2>
-            <ul>
-              <li>Static website hosted in Amazon S3</li>
-              <li>Content delivered through Amazon CloudFront</li>
-              <li>Visitor counter powered by AWS Lambda</li>
-              <li>Count stored in Amazon DynamoDB</li>
-              <li>Infrastructure provisioned with Terraform</li>
-            </ul>
-          </div>
+<a class="btn btn-primary" href="https://github.com/carlosa-aws/aws-portfolio-static" target="_blank">
+View GitHub Repository
+</a>
 
-          <div class="card two-col">
-            <h2>Technology Stack</h2>
-            <div class="stack">
-              <span class="tag">Terraform</span>
-              <span class="tag">AWS S3</span>
-              <span class="tag">CloudFront</span>
-              <span class="tag">Lambda</span>
-              <span class="tag">DynamoDB</span>
-              <span class="tag">Python</span>
-              <span class="tag">HTML</span>
-              <span class="tag">CSS</span>
-              <span class="tag">JavaScript</span>
-            </div>
-          </div>
+<a class="btn btn-secondary" href="https://www.linkedin.com/in/carlosalersfuentes" target="_blank">
+View LinkedIn
+</a>
 
-          <div class="card two-col">
-            <h2>What I Practiced</h2>
-            <ul>
-              <li>Building cloud infrastructure with Terraform</li>
-              <li>Deploying a static site using AWS services</li>
-              <li>Connecting frontend code to a serverless backend</li>
-              <li>Using DynamoDB for persistent visitor count storage</li>
-              <li>Documenting a project for GitHub and recruiters</li>
-            </ul>
-          </div>
+<div class="visitor-box">
+Visitor Count: <span id="visitor-count">Loading...</span>
+</div>
 
-          <div class="card two-col">
-            <h2>Next Improvements</h2>
-            <ul>
-              <li>Add a custom domain</li>
-              <li>Improve responsive mobile styling</li>
-              <li>Add an architecture diagram section</li>
-              <li>Add a contact form in a future version</li>
-              <li>Set up CI/CD for automated deployments</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+</div>
+</div>
+</section>
 
-  <footer>
-    <div class="container">
-      Built by Carlos Alers-Fuentes using Terraform and AWS
-    </div>
-  </footer>
 
-  <script>
-    const API_URL = "https://dsplh4d9a4.execute-api.us-east-1.amazonaws.com";
+<section class="section">
+<div class="container">
 
-    async function loadVisitorCount() {
-      const countElement = document.getElementById("visitor-count");
+<div class="grid">
 
-      try {
-        const response = await fetch(API_URL, {
-          method: "GET"
-        });
+<div class="card">
+<h2>About This Project</h2>
+<p>
+This portfolio website was built to demonstrate hands-on AWS cloud engineering skills.
+The frontend is served through Amazon CloudFront from a private S3 bucket, while a
+serverless backend updates the visitor counter using AWS Lambda and DynamoDB.
+</p>
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch visitor count");
-        }
+<p>
+All infrastructure is provisioned using Terraform to demonstrate Infrastructure as Code
+and reproducible cloud deployments.
+</p>
+</div>
 
-        const data = await response.json();
 
-        if (typeof data.visitorCount !== "undefined") {
-          countElement.textContent = data.visitorCount;
-        } else if (typeof data.count !== "undefined") {
-          countElement.textContent = data.count;
-        } else {
-          countElement.textContent = "Unavailable";
-        }
-      } catch (error) {
-        console.error("Error loading visitor count:", error);
-        countElement.textContent = "Unavailable";
-      }
-    }
+<div class="card">
+<h2>Architecture Highlights</h2>
 
-    loadVisitorCount();
-  </script>
+<ul>
+<li>Static website hosted in Amazon S3</li>
+<li>Content delivered globally via CloudFront CDN</li>
+<li>Visitor counter powered by AWS Lambda</li>
+<li>Visitor count stored in DynamoDB</li>
+<li>Infrastructure provisioned using Terraform</li>
+</ul>
+
+</div>
+
+
+<div class="card">
+<h2>Technology Stack</h2>
+
+<div class="stack">
+<span class="tag">Terraform</span>
+<span class="tag">AWS S3</span>
+<span class="tag">CloudFront</span>
+<span class="tag">Lambda</span>
+<span class="tag">DynamoDB</span>
+<span class="tag">Python</span>
+<span class="tag">HTML</span>
+<span class="tag">CSS</span>
+<span class="tag">JavaScript</span>
+</div>
+
+</div>
+
+
+<div class="card">
+<h2>What I Practiced</h2>
+
+<ul>
+<li>Infrastructure as Code using Terraform</li>
+<li>Deploying secure static websites on AWS</li>
+<li>Serverless backend development with Lambda</li>
+<li>Integrating DynamoDB with API Gateway</li>
+<li>Cloud architecture documentation and GitHub portfolio presentation</li>
+</ul>
+
+</div>
+
+
+</div>
+</div>
+</section>
+
+
+<section class="section">
+<div class="container">
+
+<div class="card">
+
+<h2>Architecture Diagram</h2>
+
+<p>
+The diagram below shows the high-level architecture used in this project.
+CloudFront securely delivers the static site from a private S3 bucket while
+AWS Lambda retrieves and updates the visitor count stored in DynamoDB.
+All infrastructure resources are created and managed using Terraform.
+</p>
+
+<img class="architecture-image" src="images/01-architecture-overview.png" alt="AWS Architecture Diagram">
+
+<p class="image-caption">
+High-level architecture for the AWS Cloud Portfolio Project
+</p>
+
+</div>
+
+</div>
+</section>
+
+
+<footer>
+
+Built by Carlos Alers-Fuentes using AWS and Terraform
+
+</footer>
+
+
+<script>
+
+const API_URL = "https://dsplh4d9a4.execute-api.us-east-1.amazonaws.com/"
+
+async function loadVisitorCount(){
+
+try{
+
+const response = await fetch(API_URL)
+
+const data = await response.json()
+
+document.getElementById("visitor-count").textContent = data.visitorCount || data.count || "Unavailable"
+
+}catch(error){
+
+document.getElementById("visitor-count").textContent="Unavailable"
+
+}
+
+}
+
+loadVisitorCount()
+
+</script>
+
 </body>
 </html>
