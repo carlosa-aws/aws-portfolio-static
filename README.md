@@ -1,3 +1,5 @@
+![Deploy](https://github.com/carlosa-aws/aws-portfolio-static/actions/workflows/deploy-site.yml/badge.svg)
+
 # AWS Serverless Portfolio Website
 
 A serverless personal portfolio website hosted on AWS using **S3, CloudFront, Lambda, DynamoDB, and Terraform**.
