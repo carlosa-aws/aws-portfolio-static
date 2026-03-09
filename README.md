@@ -20,6 +20,7 @@ Services used:
 - AWS Lambda – serverless visitor counter
 - Amazon DynamoDB – NoSQL database storing visitor counts
 - Terraform – Infrastructure as Code to provision AWS resources
+- GitHub Actions - CI/CD Pipeline
 
 Architecture flow:
 
@@ -99,22 +100,67 @@ Terraform is used to provision and manage AWS resources.
 
 ---
 
+## CI/CD Pipeline (GitHub Actions)
+
+This project uses GitHub Actions to automatically deploy updates to the live website.
+
+![GitHub Actions Workflow](docs/images/14-github-actions-workflow.png)
+
+Whenever code is pushed to the **main branch**, the CI/CD pipeline performs the following steps:
+
+1. Uploads the updated website files to the S3 origin bucket
+2. Invalidates the CloudFront cache
+3. Deploys the updated site globally
+
+### Deployment Flow
+
+Developer Push → GitHub
+↓
+GitHub Actions Workflow
+↓
+Sync files to Amazon S3
+↓
+Invalidate CloudFront Cache
+↓
+CloudFront distributes the updated site globally
+
+### Workflow File
+
+.github/workflows/deploy-site.yml
+
+The workflow uses:
+
+* aws-actions/configure-aws-credentials
+* aws s3 sync
+* aws cloudfront create-invalidation
+
+---
+
 # Project Structure
 
 aws-portfolio-static
 
-infra/
-- main.tf
-- versions.tf
+-.github/
+  - workflows/
+  - deploy-site.yml
 
-lambda/
-- visitor_counter.py
+-infra/
+  -main.tf
+  -versions.tf
 
-site/
-- index.html
+-lambda/
+  -visitor_counter.py
 
-docs/
-- images/
+-site/
+  -index.html
+  -images/
+
+-docs/
+  -images/
+
+-.gitignore
+
+-README.md
 
 ---
 
@@ -131,14 +177,6 @@ docs/
 # Future Improvements
 
 Planned enhancements for the project include:
-
-## CI/CD Pipeline
-
-Implement automated deployments using:
-
-- GitHub Actions
-- Terraform automation
-- Infrastructure validation
 
 ## Contact Form
 
