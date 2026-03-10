@@ -141,29 +141,27 @@ The workflow uses:
 # Project Structure
 
 aws-portfolio-static
-
--.github/
-  - workflows/
-  - deploy-site.yml
-
--infra/
-  -main.tf
-  -versions.tf
-
--lambda/
-  -visitor_counter.py
-
--site/
-  -index.html
-  -images/
-
--docs/
-  -images/
-
--.gitignore
-
--README.md
-
+│
+├── .github/
+│   └── workflows/
+│       └── deploy-site.yml
+│
+├── infra/
+│   ├── main.tf
+│   └── versions.tf
+│
+├── lambda/
+│   └── visitor_counter.py
+│
+├── site/
+│   ├── index.html
+│   └── images/
+│
+├── docs/
+│   └── images/
+│
+├── .gitignore
+└── README.md
 ---
 
 # Security Best Practices Implemented
@@ -218,6 +216,14 @@ $0 – $3 per month
 - DynamoDB data persistence
 - Infrastructure as Code (Terraform)
 - Git and GitHub workflow
+
+---
+
+## References
+
+- AWS Documentation
+- Terraform Documentation
+- GitHub Actions Documentation
 
 ---
 
