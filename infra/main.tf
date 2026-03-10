@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "portfolio_bucket" {
-  bucket = "carlos-portfolio-${random_id.rand.hex}"
+  bucket = "carlos-portfolio-927b3aff"
 
 }
 
@@ -98,6 +98,13 @@ resource "aws_lambda_function" "visitor_lambda" {
 resource "aws_apigatewayv2_api" "visitor_api" {
   name          = "visitor-api"
   protocol_type = "HTTP"
+
+cors_configuration {
+  allow_origins = ["*"]
+  allow_methods = ["GET", "OPTIONS"]
+  allow_headers = ["content-type"]
+
+  }
 }
 
 resource "aws_apigatewayv2_integration" "lambda_integration" {
@@ -197,9 +204,6 @@ resource "aws_s3_bucket_policy" "allow_cloudfront" {
 
 
 
-resource "random_id" "rand" {
-  byte_length = 4
-}
 
 
 
