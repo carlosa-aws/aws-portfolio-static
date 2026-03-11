@@ -77,11 +77,52 @@ resource "aws_iam_policy" "lambda_dynamodb_policy" {
           "dynamodb:PutItem",
           "dynamodb:UpdateItem"
         ]
-        Resource = aws_dynamodb_table.visitor_table.arn
+         Resource = [
+          aws_dynamodb_table.visitor_table.arn,
+          aws_dynamodb_table.contact_table.arn
+        ]
       }
     ]
   })
 }
+
+
+resource "aws_sns_topic" "contact_notifications" {
+  name = "portfolio-contact-notifications"
+}
+
+resource "aws_sns_topic_subscription" "email_alerts" {
+  topic_arn = aws_sns_topic.contact_notifications.arn
+  protocol  = "email"
+  endpoint  = "carlos.alers.fuentes@gmail.com"
+}
+
+
+resource "aws_iam_policy" "lambda_sns_policy" {
+
+  name = "lambda_sns_policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "sns:Publish"
+        ]
+        Resource = aws_sns_topic.contact_notifications.arn
+      }
+    ]
+  })
+}
+
+
+resource "aws_iam_role_policy_attachment" "lambda_sns_attach" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_sns_policy.arn
+}
+
+
 
 resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
   role       = aws_iam_role.lambda_role.name
@@ -119,6 +160,14 @@ resource "aws_lambda_function" "contact_lambda" {
   role = aws_iam_role.lambda_role.arn
 
   source_code_hash = filebase64sha256("../lambda/contact.zip")
+
+  environment {
+    variables = {
+      TABLE_NAME     = aws_dynamodb_table.contact_table.name
+      SNS_TOPIC_ARN  = aws_sns_topic.contact_notifications.arn
+      ALLOWED_ORIGIN = "*"
+    }
+  }
 }
 
 
@@ -129,7 +178,7 @@ resource "aws_apigatewayv2_api" "visitor_api" {
 
   cors_configuration {
     allow_origins = ["*"]
-    allow_methods = ["GET", "OPTIONS"]
+    allow_methods = ["GET", "POST", "OPTIONS"]
     allow_headers = ["content-type"]
 
   }

@@ -368,8 +368,8 @@ footer {
         </div>
 
         <div class="hidden-field" aria-hidden="true">
-          <label for="company">Company</label>
-          <input id="company" name="company" type="text" tabindex="-1" autocomplete="off">
+          <label for="website">Website</label>
+          <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
         </div>
 
         <button class="btn btn-primary" type="submit" id="submit-button">
@@ -442,7 +442,7 @@ async function handleContactSubmit(event) {
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim();
   const message = document.getElementById("message").value.trim();
-  const company = document.getElementById("company").value.trim();
+  const website = document.getElementById("website").value.trim();
 
   if (!name || !email || !message) {
     showFormStatus("Please complete all required fields.", "error");
@@ -464,10 +464,14 @@ async function handleContactSubmit(event) {
     return;
   }
 
-  if (company) {
+    showFormStatus("Message blocked.", "error");
+  return;
+}
+
+  if (website) {
     showFormStatus("Message blocked.", "error");
     return;
-  }
+}
 
   submitButton.disabled = true;
   submitButton.textContent = "Sending...";
@@ -479,11 +483,12 @@ async function handleContactSubmit(event) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
+        y
+})body: JSON.stringify({
         name,
         email,
         message,
-        company
+        website
       })
     });
 
