@@ -415,10 +415,16 @@ const CONTACT_API_URL = "https://dsplh4d9a4.execute-api.us-east-1.amazonaws.com/
 async function loadVisitorCount() {
   try {
     const response = await fetch(VISITOR_API_URL);
+
+    if (!response.ok) {
+      throw new Error(`Visitor API returned ${response.status}`);
+    }
+
     const data = await response.json();
     document.getElementById("visitor-count").textContent =
       data.visitorCount || data.count || "Unavailable";
   } catch (error) {
+    console.error("Visitor count error:", error);
     document.getElementById("visitor-count").textContent = "Unavailable";
   }
 }
@@ -464,14 +470,10 @@ async function handleContactSubmit(event) {
     return;
   }
 
-    showFormStatus("Message blocked.", "error");
-  return;
-}
-
   if (website) {
     showFormStatus("Message blocked.", "error");
     return;
-}
+  }
 
   submitButton.disabled = true;
   submitButton.textContent = "Sending...";
@@ -483,8 +485,7 @@ async function handleContactSubmit(event) {
       headers: {
         "Content-Type": "application/json"
       },
-        y
-})body: JSON.stringify({
+      body: JSON.stringify({
         name,
         email,
         message,
@@ -500,13 +501,17 @@ async function handleContactSubmit(event) {
     }
 
     if (!response.ok) {
-      throw new Error(result.message || "Unable to send message.");
+      throw new Error(result.message || `Unable to send message. Status: ${response.status}`);
     }
 
     showFormStatus("Your message has been sent successfully.", "success");
     form.reset();
   } catch (error) {
-    showFormStatus(error.message || "Something went wrong while sending your message.", "error");
+    console.error("Contact form error:", error);
+    showFormStatus(
+      error.message || "Something went wrong while sending your message.",
+      "error"
+    );
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = "Send Message";
