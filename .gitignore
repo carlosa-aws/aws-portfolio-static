@@ -1,8 +1,9 @@
-# Terraform
+# Terraform working directory
 **/.terraform/*
+
+# Terraform state
 *.tfstate
 *.tfstate.*
-.terraform.lock.hcl
 crash.log
 override.tf
 override.tf.json

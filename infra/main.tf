@@ -27,6 +27,18 @@ resource "aws_dynamodb_table" "visitor_table" {
 }
 
 
+resource "aws_dynamodb_table" "contact_table" {
+  name         = "contact-messages"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "message_id"
+
+  attribute {
+    name = "message_id"
+    type = "S"
+  }
+}
+
+
 
 resource "aws_iam_role" "lambda_role" {
   name = "visitor_lambda_role"
@@ -95,14 +107,30 @@ resource "aws_lambda_function" "visitor_lambda" {
 }
 
 
+
+resource "aws_lambda_function" "contact_lambda" {
+
+  function_name = "contact-form"
+
+  filename      = "../lambda/contact.zip"
+  handler       = "contact_form.lambda_handler"
+  runtime       = "python3.11"
+
+  role = aws_iam_role.lambda_role.arn
+
+  source_code_hash = filebase64sha256("../lambda/contact.zip")
+}
+
+
+
 resource "aws_apigatewayv2_api" "visitor_api" {
   name          = "visitor-api"
   protocol_type = "HTTP"
 
-cors_configuration {
-  allow_origins = ["*"]
-  allow_methods = ["GET", "OPTIONS"]
-  allow_headers = ["content-type"]
+  cors_configuration {
+    allow_origins = ["*"]
+    allow_methods = ["GET", "OPTIONS"]
+    allow_headers = ["content-type"]
 
   }
 }
@@ -133,6 +161,39 @@ resource "aws_apigatewayv2_stage" "default" {
   auto_deploy = true
 }
 
+
+resource "aws_apigatewayv2_integration" "contact_integration" {
+
+  api_id = aws_apigatewayv2_api.visitor_api.id
+
+  integration_type = "AWS_PROXY"
+  integration_uri  = aws_lambda_function.contact_lambda.invoke_arn
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "contact_route" {
+
+  api_id = aws_apigatewayv2_api.visitor_api.id
+
+  route_key = "POST /contact"
+
+  target = "integrations/${aws_apigatewayv2_integration.contact_integration.id}"
+}
+
+
+resource "aws_lambda_permission" "api_contact_permission" {
+
+  statement_id  = "AllowAPIGatewayInvokeContact"
+
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.contact_lambda.function_name
+
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_apigatewayv2_api.visitor_api.execution_arn}/*/*"
+}
+
+
 resource "aws_cloudfront_origin_access_control" "oac" {
   name                              = "portfolio-oac"
   description                       = "OAC for portfolio S3 bucket"
@@ -156,8 +217,8 @@ resource "aws_cloudfront_distribution" "portfolio_cdn" {
     target_origin_id       = "portfolioS3Origin"
     viewer_protocol_policy = "redirect-to-https"
 
-    allowed_methods  = ["GET", "HEAD"]
-    cached_methods   = ["GET", "HEAD"]
+    allowed_methods = ["GET", "HEAD"]
+    cached_methods  = ["GET", "HEAD"]
 
     forwarded_values {
       query_string = false
@@ -190,7 +251,7 @@ resource "aws_s3_bucket_policy" "allow_cloudfront" {
         Principal = {
           Service = "cloudfront.amazonaws.com"
         }
-        Action = "s3:GetObject"
+        Action   = "s3:GetObject"
         Resource = "${aws_s3_bucket.portfolio_bucket.arn}/*"
         Condition = {
           StringEquals = {

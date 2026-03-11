@@ -6,312 +6,511 @@
 
 <title>Carlos Alers-Fuentes | AWS Cloud Portfolio</title>
 
-<meta name="description" content="AWS cloud portfolio project built with Terraform, S3, CloudFront, Lambda, and DynamoDB.">
+<meta name="description" content="AWS cloud portfolio project built with Terraform, S3, CloudFront, Lambda, DynamoDB, and API Gateway.">
 
 <style>
-
 :root {
   --bg: #f4f7fb;
   --card: #ffffff;
   --text: #1f2937;
   --muted: #6b7280;
   --accent: #2563eb;
+  --accent-dark: #1d4ed8;
   --border: #e5e7eb;
   --shadow: 0 10px 30px rgba(0,0,0,0.08);
+  --success: #166534;
+  --success-bg: #dcfce7;
+  --error: #991b1b;
+  --error-bg: #fee2e2;
 }
 
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-body{
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-background:var(--bg);
-color:var(--text);
-line-height:1.6;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
 }
 
-.container{
-width:90%;
-max-width:1000px;
-margin:auto;
+.container {
+  width: 90%;
+  max-width: 1000px;
+  margin: auto;
 }
 
-.hero{
-padding:70px 0 40px 0;
+.hero {
+  padding: 70px 0 40px 0;
 }
 
-.hero-card{
-background:white;
-padding:40px;
-border-radius:14px;
-box-shadow:var(--shadow);
+.hero-card {
+  background: white;
+  padding: 40px;
+  border-radius: 14px;
+  box-shadow: var(--shadow);
 }
 
-h1{
-font-size:2.8rem;
-margin-bottom:10px;
+h1 {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
 }
 
-.subtitle{
-color:var(--muted);
-margin-bottom:25px;
+.subtitle {
+  color: var(--muted);
+  margin-bottom: 25px;
 }
 
-.btn{
-display:inline-block;
-padding:12px 18px;
-border-radius:8px;
-font-weight:600;
-margin-right:10px;
+.btn {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-right: 10px;
+  margin-bottom: 10px;
 }
 
-.btn-primary{
-background:var(--accent);
-color:white;
-text-decoration:none;
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
 }
 
-.btn-secondary{
-background:white;
-border:1px solid var(--border);
-color:black;
-text-decoration:none;
+.btn-primary:hover {
+  background: var(--accent-dark);
 }
 
-.visitor-box{
-margin-top:20px;
-font-weight:600;
+.btn-secondary {
+  background: white;
+  border: 1px solid var(--border);
+  color: black;
+  text-decoration: none;
 }
 
-.section{
-padding:20px 0;
+.visitor-box {
+  margin-top: 20px;
+  font-weight: 600;
 }
 
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
+.section {
+  padding: 20px 0;
 }
 
-.card{
-background:white;
-padding:25px;
-border-radius:14px;
-box-shadow:var(--shadow);
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
-.card h2{
-margin-bottom:12px;
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: var(--shadow);
 }
 
-.stack{
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-margin-top:10px;
+.card h2 {
+  margin-bottom: 12px;
 }
 
-.tag{
-background:#f3f4f6;
-padding:7px 12px;
-border-radius:20px;
-font-size:.9rem;
+.card p + p {
+  margin-top: 14px;
 }
 
-.architecture-image{
-width:100%;
-max-width:900px;
-margin-top:20px;
-border-radius:12px;
-box-shadow:var(--shadow);
+.card ul {
+  padding-left: 20px;
 }
 
-.image-caption{
-text-align:center;
-color:var(--muted);
-margin-top:10px;
-font-size:.9rem;
+.card li + li {
+  margin-top: 8px;
 }
 
-footer{
-margin-top:40px;
-padding:20px;
-text-align:center;
-color:var(--muted);
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-@media(max-width:800px){
-.grid{
-grid-template-columns:1fr;
-}
+.tag {
+  background: #f3f4f6;
+  padding: 7px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
 }
 
+.architecture-image {
+  width: 100%;
+  max-width: 900px;
+  margin-top: 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.image-caption {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+.contact-card {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.contact-intro {
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font: inherit;
+  background: #fff;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.form-note {
+  font-size: 0.92rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.hidden-field {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.form-status {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  display: none;
+}
+
+.form-status.success {
+  display: block;
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.form-status.error {
+  display: block;
+  background: var(--error-bg);
+  color: var(--error);
+}
+
+footer {
+  margin-top: 40px;
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+}
+
+@media (max-width: 800px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+  }
+}
 </style>
 </head>
 
 <body>
 
 <section class="hero">
-<div class="container">
+  <div class="container">
+    <div class="hero-card">
+      <h1>Carlos Alers-Fuentes</h1>
 
-<div class="hero-card">
+      <p class="subtitle">
+        AWS Cloud Portfolio Project demonstrating serverless architecture,
+        Infrastructure as Code with Terraform, secure static hosting, and AWS cloud services.
+      </p>
 
-<h1>Carlos Alers-Fuentes</h1>
+      <a class="btn btn-primary" href="https://github.com/carlosa-aws/aws-portfolio-static" target="_blank" rel="noopener noreferrer">
+        View GitHub Repository
+      </a>
 
-<p class="subtitle">
-AWS Cloud Portfolio Project demonstrating serverless architecture,
-Infrastructure as Code with Terraform, and AWS cloud services.
-</p>
+      <a class="btn btn-secondary" href="https://www.linkedin.com/in/carlosalersfuentes" target="_blank" rel="noopener noreferrer">
+        View LinkedIn
+      </a>
 
-<a class="btn btn-primary" href="https://github.com/carlosa-aws/aws-portfolio-static" target="_blank">
-View GitHub Repository
-</a>
-
-<a class="btn btn-secondary" href="https://www.linkedin.com/in/carlosalersfuentes" target="_blank">
-View LinkedIn
-</a>
-
-<div class="visitor-box">
-Visitor Count: <span id="visitor-count">Loading...</span>
-</div>
-
-</div>
-</div>
+      <div class="visitor-box">
+        Visitor Count: <span id="visitor-count">Loading...</span>
+      </div>
+    </div>
+  </div>
 </section>
-
 
 <section class="section">
-<div class="container">
+  <div class="container">
+    <div class="grid">
 
-<div class="grid">
+      <div class="card">
+        <h2>About This Project</h2>
+        <p>
+          This portfolio website was built to demonstrate hands-on AWS cloud engineering skills.
+          The frontend is served through Amazon CloudFront from a private S3 bucket, while a
+          serverless backend powers the visitor counter and contact form functionality.
+        </p>
 
-<div class="card">
-<h2>About This Project</h2>
-<p>
-This portfolio website was built to demonstrate hands-on AWS cloud engineering skills.
-The frontend is served through Amazon CloudFront from a private S3 bucket, while a
-serverless backend updates the visitor counter using AWS Lambda and DynamoDB.
-</p>
+        <p>
+          Infrastructure is provisioned using Terraform to demonstrate Infrastructure as Code,
+          repeatable deployments, and cloud resource management using best practices.
+        </p>
+      </div>
 
-<p>
-All infrastructure is provisioned using Terraform to demonstrate Infrastructure as Code
-and reproducible cloud deployments.
-</p>
-</div>
+      <div class="card">
+        <h2>Architecture Highlights</h2>
+        <ul>
+          <li>Static website hosted in Amazon S3</li>
+          <li>Content delivered globally via CloudFront CDN</li>
+          <li>Visitor counter powered by AWS Lambda</li>
+          <li>Visitor count stored in DynamoDB</li>
+          <li>Contact form submitted through API Gateway</li>
+          <li>Message handling secured with validation and basic anti-bot protections</li>
+          <li>Infrastructure provisioned using Terraform</li>
+          <li>GitHub Actions used for CI/CD automation</li>
+        </ul>
+      </div>
 
+      <div class="card">
+        <h2>Technology Stack</h2>
+        <div class="stack">
+          <span class="tag">Terraform</span>
+          <span class="tag">AWS S3</span>
+          <span class="tag">CloudFront</span>
+          <span class="tag">API Gateway</span>
+          <span class="tag">Lambda</span>
+          <span class="tag">DynamoDB</span>
+          <span class="tag">Python</span>
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+        </div>
+      </div>
 
-<div class="card">
-<h2>Architecture Highlights</h2>
+      <div class="card">
+        <h2>What I Practiced</h2>
+        <ul>
+          <li>Infrastructure as Code using Terraform</li>
+          <li>Deploying secure static websites on AWS</li>
+          <li>Building serverless backends with Lambda and API Gateway</li>
+          <li>Integrating DynamoDB with backend services</li>
+          <li>Adding basic protections against spam and abuse</li>
+          <li>Documenting cloud architecture for a professional portfolio</li>
+        </ul>
+      </div>
 
-<ul>
-<li>Static website hosted in Amazon S3</li>
-<li>Content delivered globally via CloudFront CDN</li>
-<li>Visitor counter powered by AWS Lambda</li>
-<li>Visitor count stored in DynamoDB</li>
-<li>Infrastructure provisioned using Terraform</li>
-<li>GitHub Actions (CI/CD Automation)</li>
-</ul>
-
-</div>
-
-
-<div class="card">
-<h2>Technology Stack</h2>
-
-<div class="stack">
-<span class="tag">Terraform</span>
-<span class="tag">AWS S3</span>
-<span class="tag">CloudFront</span>
-<span class="tag">Lambda</span>
-<span class="tag">DynamoDB</span>
-<span class="tag">Python</span>
-<span class="tag">HTML</span>
-<span class="tag">CSS</span>
-<span class="tag">JavaScript</span>
-</div>
-
-</div>
-
-
-<div class="card">
-<h2>What I Practiced</h2>
-
-<ul>
-<li>Infrastructure as Code using Terraform</li>
-<li>Deploying secure static websites on AWS</li>
-<li>Serverless backend development with Lambda</li>
-<li>Integrating DynamoDB with API Gateway</li>
-<li>Cloud architecture documentation and GitHub portfolio presentation</li>
-</ul>
-
-</div>
-
-
-</div>
-</div>
+    </div>
+  </div>
 </section>
-
 
 <section class="section">
-<div class="container">
+  <div class="container">
+    <div class="card contact-card">
+      <h2>Contact Me</h2>
+      <p class="contact-intro">
+        Send a message through this serverless contact form. Submissions are validated before being sent,
+        and a hidden honeypot field is included to reduce basic bot traffic.
+      </p>
 
-<div class="card">
+      <form id="contact-form" novalidate>
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" maxlength="100" required>
+        </div>
 
-<h2>Architecture Diagram</h2>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" maxlength="150" required>
+        </div>
 
-<p>
-The diagram below shows the high-level architecture used in this project.
-CloudFront securely delivers the static site from a private S3 bucket while
-AWS Lambda retrieves and updates the visitor count stored in DynamoDB.
-All infrastructure resources are created and managed using Terraform.
-</p>
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" maxlength="2000" required></textarea>
+          <div class="form-note">Please keep your message under 2000 characters.</div>
+        </div>
 
-<img class="architecture-image" src="images/01-architecture-overview.png" alt="AWS Architecture Diagram">
+        <div class="hidden-field" aria-hidden="true">
+          <label for="company">Company</label>
+          <input id="company" name="company" type="text" tabindex="-1" autocomplete="off">
+        </div>
 
-<p class="image-caption">
-High-level architecture for the AWS Cloud Portfolio Project
-</p>
+        <button class="btn btn-primary" type="submit" id="submit-button">
+          Send Message
+        </button>
 
-</div>
-
-</div>
+        <div id="form-status" class="form-status"></div>
+      </form>
+    </div>
+  </div>
 </section>
 
+<section class="section">
+  <div class="container">
+    <div class="card">
+      <h2>Architecture Diagram</h2>
+
+      <p>
+        The diagram below shows the high-level architecture used in this project.
+        CloudFront securely delivers the static site from a private S3 bucket while
+        AWS Lambda retrieves and updates the visitor count stored in DynamoDB.
+        The contact form is handled through API Gateway and Lambda, with validation
+        and basic abuse protections applied at the application layer.
+      </p>
+
+      <img class="architecture-image" src="images/01-architecture-overview.png" alt="AWS Architecture Diagram">
+
+      <p class="image-caption">
+        High-level architecture for the AWS Cloud Portfolio Project
+      </p>
+    </div>
+  </div>
+</section>
 
 <footer>
-
-Built by Carlos Alers-Fuentes using AWS and Terraform
-
+  Built by Carlos Alers-Fuentes using AWS and Terraform
 </footer>
 
-
 <script>
+const VISITOR_API_URL = "https://dsplh4d9a4.execute-api.us-east-1.amazonaws.com/visitor";
+const CONTACT_API_URL = "https://dsplh4d9a4.execute-api.us-east-1.amazonaws.com/contact";
 
-const API_URL = "https://dsplh4d9a4.execute-api.us-east-1.amazonaws.com/visitor"
-
-async function loadVisitorCount(){
-
-try{
-
-const response = await fetch(API_URL)
-
-const data = await response.json()
-
-document.getElementById("visitor-count").textContent = data.visitorCount || data.count || "Unavailable"
-
-}catch(error){
-
-document.getElementById("visitor-count").textContent="Unavailable"
-
+async function loadVisitorCount() {
+  try {
+    const response = await fetch(VISITOR_API_URL);
+    const data = await response.json();
+    document.getElementById("visitor-count").textContent =
+      data.visitorCount || data.count || "Unavailable";
+  } catch (error) {
+    document.getElementById("visitor-count").textContent = "Unavailable";
+  }
 }
 
+function showFormStatus(message, type) {
+  const status = document.getElementById("form-status");
+  status.textContent = message;
+  status.className = `form-status ${type}`;
 }
 
-loadVisitorCount()
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
+async function handleContactSubmit(event) {
+  event.preventDefault();
+
+  const submitButton = document.getElementById("submit-button");
+  const form = document.getElementById("contact-form");
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const message = document.getElementById("message").value.trim();
+  const company = document.getElementById("company").value.trim();
+
+  if (!name || !email || !message) {
+    showFormStatus("Please complete all required fields.", "error");
+    return;
+  }
+
+  if (name.length > 100) {
+    showFormStatus("Name must be 100 characters or fewer.", "error");
+    return;
+  }
+
+  if (email.length > 150 || !isValidEmail(email)) {
+    showFormStatus("Please enter a valid email address.", "error");
+    return;
+  }
+
+  if (message.length > 2000) {
+    showFormStatus("Message must be 2000 characters or fewer.", "error");
+    return;
+  }
+
+  if (company) {
+    showFormStatus("Message blocked.", "error");
+    return;
+  }
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Sending...";
+  showFormStatus("Submitting your message...", "success");
+
+  try {
+    const response = await fetch(CONTACT_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        message,
+        company
+      })
+    });
+
+    let result = {};
+    try {
+      result = await response.json();
+    } catch (e) {
+      result = {};
+    }
+
+    if (!response.ok) {
+      throw new Error(result.message || "Unable to send message.");
+    }
+
+    showFormStatus("Your message has been sent successfully.", "success");
+    form.reset();
+  } catch (error) {
+    showFormStatus(error.message || "Something went wrong while sending your message.", "error");
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "Send Message";
+  }
+}
+
+document.getElementById("contact-form").addEventListener("submit", handleContactSubmit);
+
+loadVisitorCount();
 </script>
 
 </body>
