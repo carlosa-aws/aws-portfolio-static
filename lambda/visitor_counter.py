@@ -1,11 +1,11 @@
 import json
 import boto3
 import os
-from decimal import Decimal
 from datetime import datetime, timezone
+from botocore.exceptions import ClientError
 
 dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table(os.environ.get("TABLE_NAME"))
+table = dynamodb.Table(os.environ["TABLE_NAME"])
 
 COOLDOWN_SECONDS = 60
 
@@ -13,6 +13,7 @@ COOLDOWN_SECONDS = 60
 def lambda_handler(event, context):
     ip = event["requestContext"]["http"]["sourceIp"]
     now = int(datetime.now(timezone.utc).timestamp())
+    threshold = now - COOLDOWN_SECONDS
 
     try:
         response = table.update_item(
@@ -24,7 +25,7 @@ def lambda_handler(event, context):
             """,
             ConditionExpression="""
                 attribute_not_exists(last_visit)
-                OR :now - last_visit > :cooldown
+                OR last_visit < :threshold
                 OR last_ip <> :ip
             """,
             ExpressionAttributeValues={
@@ -32,21 +33,26 @@ def lambda_handler(event, context):
                 ":inc": 1,
                 ":ip": ip,
                 ":now": now,
-                ":cooldown": COOLDOWN_SECONDS
+                ":threshold": threshold
             },
             ReturnValues="UPDATED_NEW"
         )
 
         count = int(response["Attributes"]["visit_count"])
 
-    except dynamodb.meta.client.exceptions.ConditionalCheckFailedException:
-        response = table.get_item(Key={"id": "visits"})
-        count = int(response["Item"].get("visit_count", 0))
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
+            response = table.get_item(Key={"id": "visits"})
+            count = int(response.get("Item", {}).get("visit_count", 0))
+        else:
+            print("DynamoDB error:", str(e))
+            raise
 
     return {
         "statusCode": 200,
         "headers": {
-            "Access-Control-Allow-Origin": "*"
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
         },
         "body": json.dumps({"visitorCount": count})
     }
