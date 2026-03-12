@@ -10,8 +10,27 @@ table = dynamodb.Table(os.environ["TABLE_NAME"])
 COOLDOWN_SECONDS = 60
 
 
+def get_source_ip(event):
+    request_context = event.get("requestContext", {})
+
+    http_info = request_context.get("http", {})
+    if http_info.get("sourceIp"):
+        return http_info["sourceIp"]
+
+    identity_info = request_context.get("identity", {})
+    if identity_info.get("sourceIp"):
+        return identity_info["sourceIp"]
+
+    headers = event.get("headers", {}) or {}
+    forwarded_for = headers.get("x-forwarded-for") or headers.get("X-Forwarded-For")
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+
+    return "unknown"
+
+
 def lambda_handler(event, context):
-    ip = event["requestContext"]["http"]["sourceIp"]
+    ip = get_source_ip(event)
     now = int(datetime.now(timezone.utc).timestamp())
     threshold = now - COOLDOWN_SECONDS
 
