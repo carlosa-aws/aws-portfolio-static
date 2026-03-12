@@ -2,9 +2,27 @@
 
 # AWS Serverless Portfolio Website
 
-A serverless personal portfolio website hosted on AWS using **S3, CloudFront, Lambda, DynamoDB, and Terraform**.
+A fully serverless personal portfolio website hosted on AWS using:
 
-The site includes a **visitor counter powered by AWS Lambda and DynamoDB**, demonstrating a real-world serverless architecture.
+- Amazon S3
+- Amazon CloudFront
+- Amazon API Gateway
+- AWS Lambda
+- Amazon DynamoDB
+- Amazon SNS
+- Amazon CloudWatch
+- Terraform
+- GitHub Actions
+
+The site includes:
+
+- Real-time visitor counter
+- Serverless contact form
+- SNS email notifications
+- CloudWatch monitoring and alarms
+- Automated CI/CD deployment
+
+This project demonstrates a **production-style serverless architecture** using Infrastructure as Code and AWS best practices.
 
 ---
 
@@ -14,23 +32,17 @@ The site includes a **visitor counter powered by AWS Lambda and DynamoDB**, demo
 
 This project implements a fully serverless architecture.
 
-Services used:
+### AWS Services Used
 
-- Amazon CloudFront – CDN serving the website
-- Amazon S3 - static website hosting
-- Amazon API Gateway - Public API endpoint for visitor counter
-- AWS Lambda – serverless visitor counter
-- Amazon DynamoDB – NoSQL database storing visitor counts
-- Terraform – Infrastructure as Code to provision AWS resources
-- GitHub Actions - CI/CD Pipeline
-
-Architecture flow:
-
-1. User visits the website
-2. CloudFront serves the static site from S3
-3. JavaScript calls a Lambda function
-4. Lambda updates DynamoDB visitor count
-5. Updated visitor count is returned to the website
+- **Amazon CloudFront** – CDN serving the website globally
+- **Amazon S3** – private static site origin
+- **Amazon API Gateway** – public API endpoints
+- **AWS Lambda** – serverless backend compute
+- **Amazon DynamoDB** – NoSQL database
+- **Amazon SNS** – email notifications for contact form
+- **Amazon CloudWatch** – monitoring dashboards and alarms
+- **Terraform** – infrastructure as code
+- **GitHub Actions** – CI/CD deployment pipeline
 
 ---
 
@@ -38,103 +50,250 @@ Architecture flow:
 
 ![Live Website](docs/images/13-live-site.png)
 
+The live portfolio site demonstrates:
+
+- dynamic visitor counter
+- working contact form
+- fully automated deployments
+
+---
+
+# Architecture Flow
+
+## Visitor Counter Flow
+
+1. User visits the website
+2. CloudFront serves the static site from S3
+3. JavaScript calls the **GET /visitor API**
+4. API Gateway triggers the **visitor counter Lambda**
+5. Lambda updates the **DynamoDB visitor table**
+6. Visitor count is returned to the website
+
+---
+
+## Contact Form Flow
+
+1. User submits the contact form
+2. Frontend sends POST request to **API Gateway**
+3. API Gateway triggers **contact form Lambda**
+4. Lambda validates the request
+5. Message is stored in **DynamoDB**
+6. **SNS sends email notification**
+7. Response returned to the website
+
 ---
 
 # CloudFront Distribution
 
-CloudFront delivers the site globally and securely via HTTPS.
+CloudFront delivers the site globally via HTTPS.
 
 ![CloudFront Distribution Overview](docs/images/02-cloudfront-distribution-overview.png)
 
-## Origin Access Control (OAC)
+### Security
 
-CloudFront accesses the S3 bucket privately using Origin Access Control.
+The S3 bucket is **not publicly accessible**.
 
-![CloudFront Origin OAC](docs/images/03-cloudfront-origin-oac.png)
+CloudFront accesses the bucket using:
 
----
+**Origin Access Control (OAC)**
 
-# S3 Private Static Site
+This ensures:
 
-The static site is stored in a **private S3 bucket**. Public access is blocked and only CloudFront can access the bucket.
-
-![S3 Bucket Overview](docs/images/04-s3-private-bucket-overview.png)
-
-![S3 Bucket Permissions](docs/images/05-s3-private-bucket-permissions.png)
+- direct access to the S3 bucket is blocked
+- only CloudFront can retrieve the site files
 
 ---
 
-# AWS Lambda Visitor Counter
+# Serverless APIs
 
-A Python Lambda function increments and retrieves the visitor count stored in DynamoDB.
+The site uses **Amazon API Gateway** to expose two endpoints.
+
+| Endpoint | Method | Purpose |
+|--------|--------|--------|
+| /visitor | GET | Retrieves and increments visitor count |
+| /contact | POST | Processes contact form submissions |
+
+API Gateway provides:
+
+- request routing
+- throttling
+- secure HTTPS endpoints
+
+---
+
+# AWS Lambda Functions
 
 ![Lambda Overview](docs/images/06-lambda-overview.png)
 
-## Lambda Test Execution
+Two Lambda functions power the backend.
 
-![Lambda Test Execution](docs/images/07-lambda-visitor-counter-test-execution.png)
+## Visitor Counter Lambda
+
+Language: **Python**
+
+Responsibilities:
+
+- increments visitor count
+- retrieves updated count
+- returns JSON response to website
 
 ---
 
-# DynamoDB Visitor Counter Table
+## Contact Form Lambda
 
-Visitor counts are stored in a DynamoDB table.
+Language: **Python**
+
+Responsibilities:
+
+- validates user input
+- prevents spam and malformed requests
+- stores message in DynamoDB
+- publishes notification to SNS
+
+Security protections include:
+
+- input validation
+- email format validation
+- honeypot field detection
+- CORS restrictions
+
+---
+
+# DynamoDB Tables
 
 ![DynamoDB Overview](docs/images/08-dynamodb-overview.png)
 
-![Visitor Counter Table](docs/images/09-dynamodb-visitor-table.png)
+Two DynamoDB tables are used.
+
+## Visitor Counter Table
+
+Stores total site visits.
+
+Example record:
+
+- id:visits
+- visit_count: 56
+
+---
+
+## Contact Form Table
+
+Stores contact form submissions.
+
+Fields include:
+
+- message ID
+- name
+- email
+- message
+- timestamp
+
+---
+
+# SNS Email Notifications
+
+Amazon SNS is used to send email alerts when a visitor submits the contact form.
+
+Workflow:
+
+Contact Form Submission  
+↓  
+Lambda processes message  
+↓  
+Message saved to DynamoDB  
+↓  
+SNS publishes notification  
+↓  
+Email sent to site owner
+
+This enables **real-time notifications of incoming messages**.
+
+---
+
+# Monitoring and Observability
+
+The project includes **CloudWatch monitoring and alerting**.
+
+![CloudWatch Dashboard](docs/images/15-cloudwatch-dashboard.png)
+
+## CloudWatch Dashboard
+
+Tracks key metrics such as:
+
+- Lambda invocations
+- Lambda errors
+- API Gateway requests
+- DynamoDB activity
+
+---
+
+## CloudWatch Alarms
+
+Alarms notify if issues occur such as:
+
+- Lambda errors
+- elevated error rates
+- unexpected API activity
+
+This demonstrates **basic production monitoring practices**.
 
 ---
 
 # Infrastructure as Code (Terraform)
 
-Terraform is used to provision and manage AWS resources.
+Terraform is used to provision and manage all AWS resources.
 
-## Terraform Initialization
+Managed resources include:
 
-![Terraform Init Success](docs/images/10-terraform-init-success.png)
+- S3 bucket
+- CloudFront distribution
+- API Gateway
+- Lambda functions
+- DynamoDB tables
+- SNS topic
+- IAM roles and policies
+- CloudWatch dashboards
+- CloudWatch alarms
 
-## Terraform Backend Configuration
+Example Terraform files:
 
-![Terraform Backend File](docs/images/11-terraform-backend-file.png)
+- infra/main.tf
+- infra/versions.tf
 
-![Terraform Remote Backend](docs/images/12-terraform-remote-backend.png)
+Terraform allows:
+
+- reproducible infrastructure
+- version-controlled cloud architecture
+- safe updates via `terraform plan` and `terraform apply`
 
 ---
 
-## CI/CD Pipeline (GitHub Actions)
-
-This project uses GitHub Actions to automatically deploy updates to the live website.
+# CI/CD Pipeline (GitHub Actions)
 
 ![GitHub Actions Workflow](docs/images/14-github-actions-workflow.png)
 
-Whenever code is pushed to the **main branch**, the CI/CD pipeline performs the following steps:
+The project uses **GitHub Actions** for automatic deployment.
 
-1. Uploads the updated website files to the S3 origin bucket
-2. Invalidates the CloudFront cache
-3. Deploys the updated site globally
+Whenever code is pushed to the **main branch**, the workflow:
 
-### Deployment Flow
+1. Authenticates to AWS using **OIDC**
+2. Syncs site files to the S3 origin bucket
+3. Invalidates the CloudFront cache
+4. Deploys the updated site globally
 
-Developer Push → GitHub
-↓
-GitHub Actions Workflow
-↓
-Sync files to Amazon S3
-↓
-Invalidate CloudFront Cache
-↓
-CloudFront distributes the updated site globally
+---
 
-### Workflow File
+## Deployment Flow
 
-.github/workflows/deploy-site.yml
-
-The workflow uses:
-
-* aws-actions/configure-aws-credentials
-* aws s3 sync
-* aws cloudfront create-invalidation
+Developer Push → GitHub  
+↓  
+GitHub Actions Workflow  
+↓  
+Upload site to S3  
+↓  
+Invalidate CloudFront cache  
+↓  
+Updated site deployed worldwide
 
 ---
 
@@ -143,67 +302,59 @@ The workflow uses:
 aws-portfolio-static
 │
 ├── .github/
-│   └── workflows/
-│       └── deploy-site.yml
+│ └── workflows/
+│ └── deploy-site.yml
 │
 ├── infra/
-│   ├── main.tf
-│   └── versions.tf
+│ ├── main.tf
+│ └── versions.tf
 │
 ├── lambda/
-│   └── visitor_counter.py
+│ ├── visitor_counter.py
+│ └── contact_form.py
 │
 ├── site/
-│   ├── index.html
-│   └── images/
+│ ├── index.html
+│ └── images/
 │
 ├── docs/
-│   └── images/
+│ └── images/
 │
 ├── .gitignore
 └── README.md
+
+
 ---
 
 # Security Best Practices Implemented
 
 - S3 bucket **public access blocked**
-- Access restricted via **CloudFront Origin Access Control**
-- Lambda uses **least privilege IAM permissions**
-- DynamoDB access restricted to Lambda execution role
-- Infrastructure managed through **Terraform**
-
----
-
-# Future Improvements
-
-Planned enhancements for the project include:
-
-## Contact Form
-
-Add a serverless contact form using:
-
-- API Gateway
-- AWS Lambda
-- DynamoDB
-
-This will allow visitors to send messages directly through the portfolio site.
-
-## Monitoring and Logging
-
-Add observability tools such as:
-
-- CloudWatch dashboards
-- CloudWatch alarms
+- CloudFront **Origin Access Control**
+- IAM **least privilege policies**
+- API Gateway **request throttling**
+- Input validation on contact form
+- Email format validation
+- Honeypot spam protection
+- CORS restrictions
+- Infrastructure managed with **Terraform**
 
 ---
 
 # Cost
 
-This architecture runs **within AWS Free Tier for low traffic**.
+This architecture runs **within AWS Free Tier for low traffic sites**.
 
-Estimated monthly cost after free tier:
+Typical monthly cost for low traffic:
 
-$0 – $3 per month
+$0 – $5 per month
+
+Major cost components:
+
+- CloudFront requests
+- Lambda executions
+- DynamoDB read/write capacity
+- API Gateway requests
+- SNS email notifications
 
 ---
 
@@ -213,17 +364,29 @@ $0 – $3 per month
 - CloudFront CDN configuration
 - Secure S3 architecture
 - AWS Lambda development (Python)
-- DynamoDB data persistence
+- API Gateway design
+- DynamoDB data modeling
+- SNS event notifications
+- CloudWatch monitoring and alarms
 - Infrastructure as Code (Terraform)
-- Git and GitHub workflow
+- CI/CD automation with GitHub Actions
 
 ---
 
-## References
+# References
 
-- AWS Documentation
-- Terraform Documentation
-- GitHub Actions Documentation
+The following resources were used while building this project:
+
+- AWS Documentation — https://docs.aws.amazon.com
+- Amazon S3 Documentation — https://docs.aws.amazon.com/s3
+- Amazon CloudFront Documentation — https://docs.aws.amazon.com/cloudfront
+- AWS Lambda Documentation — https://docs.aws.amazon.com/lambda
+- Amazon DynamoDB Documentation — https://docs.aws.amazon.com/dynamodb
+- Amazon API Gateway Documentation — https://docs.aws.amazon.com/apigateway
+- Amazon SNS Documentation — https://docs.aws.amazon.com/sns
+- Amazon CloudWatch Documentation — https://docs.aws.amazon.com/cloudwatch
+- Terraform Documentation — https://developer.hashicorp.com/terraform/docs
+- GitHub Actions Documentation — https://docs.github.com/actions
 
 ---
 
