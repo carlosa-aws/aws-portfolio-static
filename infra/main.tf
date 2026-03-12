@@ -450,7 +450,89 @@ resource "aws_s3_bucket_policy" "allow_cloudfront" {
   })
 }
 
+resource "aws_cloudwatch_metric_alarm" "visitor_lambda_errors" {
+  alarm_name          = "visitor-lambda-errors"
+  alarm_description   = "Alarm when the visitor-counter Lambda has 1 or more errors in 5 minutes"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  threshold           = 1
+  treat_missing_data  = "notBreaching"
 
+  namespace   = "AWS/Lambda"
+  metric_name = "Errors"
+  statistic   = "Sum"
+  period      = 300
+
+  dimensions = {
+    FunctionName = aws_lambda_function.visitor_lambda.function_name
+  }
+
+  alarm_actions = [aws_sns_topic.contact_notifications.arn]
+  ok_actions    = [aws_sns_topic.contact_notifications.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "contact_lambda_errors" {
+  alarm_name          = "contact-lambda-errors"
+  alarm_description   = "Alarm when the contact-form Lambda has 1 or more errors in 5 minutes"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  threshold           = 1
+  treat_missing_data  = "notBreaching"
+
+  namespace   = "AWS/Lambda"
+  metric_name = "Errors"
+  statistic   = "Sum"
+  period      = 300
+
+  dimensions = {
+    FunctionName = aws_lambda_function.contact_lambda.function_name
+  }
+
+  alarm_actions = [aws_sns_topic.contact_notifications.arn]
+  ok_actions    = [aws_sns_topic.contact_notifications.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "api_gateway_5xx" {
+  alarm_name          = "visitor-api-5xx-errors"
+  alarm_description   = "Alarm when the HTTP API returns 1 or more 5xx responses in 5 minutes"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  threshold           = 1
+  treat_missing_data  = "notBreaching"
+
+  namespace   = "AWS/ApiGateway"
+  metric_name = "5xx"
+  statistic   = "Sum"
+  period      = 300
+
+  dimensions = {
+    ApiId = aws_apigatewayv2_api.visitor_api.id
+  }
+
+  alarm_actions = [aws_sns_topic.contact_notifications.arn]
+  ok_actions    = [aws_sns_topic.contact_notifications.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "api_gateway_4xx" {
+  alarm_name          = "visitor-api-4xx-errors"
+  alarm_description   = "Alarm when the HTTP API returns 5 or more 4xx responses in 5 minutes"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  threshold           = 5
+  treat_missing_data  = "notBreaching"
+
+  namespace   = "AWS/ApiGateway"
+  metric_name = "4xx"
+  statistic   = "Sum"
+  period      = 300
+
+  dimensions = {
+    ApiId = aws_apigatewayv2_api.visitor_api.id
+  }
+
+  alarm_actions = [aws_sns_topic.contact_notifications.arn]
+  ok_actions    = [aws_sns_topic.contact_notifications.arn]
+}
 
 
 
