@@ -2,36 +2,51 @@ import json
 import boto3
 import os
 from decimal import Decimal
+from datetime import datetime, timezone
 
 dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table(os.environ["TABLE_NAME"])
+table = dynamodb.Table(os.environ.get("TABLE_NAME"))
+
+COOLDOWN_SECONDS = 60
 
 
 def lambda_handler(event, context):
-    print("TABLE_NAME =", os.environ.get("TABLE_NAME"))
+    ip = event["requestContext"]["http"]["sourceIp"]
+    now = int(datetime.now(timezone.utc).timestamp())
 
-    response = table.update_item(
-        Key={"id": "visits"},
-        UpdateExpression="SET visit_count = if_not_exists(visit_count, :start) + :inc",
-        ExpressionAttributeValues={
-            ":start": 0,
-            ":inc": 1
-        },
-        ReturnValues="UPDATED_NEW"
-    )
+    try:
+        response = table.update_item(
+            Key={"id": "visits"},
+            UpdateExpression="""
+                SET visit_count = if_not_exists(visit_count, :start) + :inc,
+                    last_ip = :ip,
+                    last_visit = :now
+            """,
+            ConditionExpression="""
+                attribute_not_exists(last_visit)
+                OR :now - last_visit > :cooldown
+                OR last_ip <> :ip
+            """,
+            ExpressionAttributeValues={
+                ":start": 0,
+                ":inc": 1,
+                ":ip": ip,
+                ":now": now,
+                ":cooldown": COOLDOWN_SECONDS
+            },
+            ReturnValues="UPDATED_NEW"
+        )
 
-    count = response["Attributes"]["visit_count"]
+        count = int(response["Attributes"]["visit_count"])
 
-    if isinstance(count, Decimal):
-        count = int(count)
+    except dynamodb.meta.client.exceptions.ConditionalCheckFailedException:
+        response = table.get_item(Key={"id": "visits"})
+        count = int(response["Item"].get("visit_count", 0))
 
     return {
         "statusCode": 200,
         "headers": {
-            "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*"
         },
-        "body": json.dumps({
-            "visitorCount": count
-        })
+        "body": json.dumps({"visitorCount": count})
     }
