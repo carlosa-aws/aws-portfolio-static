@@ -77,7 +77,7 @@ resource "aws_iam_policy" "lambda_dynamodb_policy" {
           "dynamodb:PutItem",
           "dynamodb:UpdateItem"
         ]
-         Resource = [
+        Resource = [
           aws_dynamodb_table.visitor_table.arn,
           aws_dynamodb_table.contact_table.arn
         ]
@@ -153,9 +153,9 @@ resource "aws_lambda_function" "contact_lambda" {
 
   function_name = "contact-form"
 
-  filename      = "../lambda/contact.zip"
-  handler       = "contact_form.lambda_handler"
-  runtime       = "python3.11"
+  filename = "../lambda/contact.zip"
+  handler  = "contact_form.lambda_handler"
+  runtime  = "python3.11"
 
   role = aws_iam_role.lambda_role.arn
 
@@ -215,8 +215,8 @@ resource "aws_apigatewayv2_integration" "contact_integration" {
 
   api_id = aws_apigatewayv2_api.visitor_api.id
 
-  integration_type = "AWS_PROXY"
-  integration_uri  = aws_lambda_function.contact_lambda.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_uri    = aws_lambda_function.contact_lambda.invoke_arn
   integration_method = "POST"
 }
 
@@ -232,16 +232,154 @@ resource "aws_apigatewayv2_route" "contact_route" {
 
 resource "aws_lambda_permission" "api_contact_permission" {
 
-  statement_id  = "AllowAPIGatewayInvokeContact"
+  statement_id = "AllowAPIGatewayInvokeContact"
 
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.contact_lambda.function_name
 
-  principal     = "apigateway.amazonaws.com"
+  principal = "apigateway.amazonaws.com"
 
   source_arn = "${aws_apigatewayv2_api.visitor_api.execution_arn}/*/*"
 }
 
+
+
+resource "aws_cloudwatch_dashboard" "portfolio_dashboard" {
+  dashboard_name = "aws-portfolio-dashboard"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type   = "text",
+        x      = 0,
+        y      = 0,
+        width  = 24,
+        height = 1,
+        properties = {
+          markdown = "# AWS Portfolio Dashboard\nMonitoring Lambda, API Gateway, and DynamoDB"
+        }
+      },
+      {
+        type   = "metric",
+        x      = 0,
+        y      = 1,
+        width  = 12,
+        height = 6,
+        properties = {
+          title   = "Lambda Invocations and Errors"
+          view    = "timeSeries"
+          stacked = false
+          region  = "us-east-1"
+          stat    = "Sum"
+          period  = 300
+          metrics = [
+            ["AWS/Lambda", "Invocations", "FunctionName", aws_lambda_function.visitor_lambda.function_name],
+            [".", "Errors", ".", "."],
+            ["AWS/Lambda", "Invocations", "FunctionName", aws_lambda_function.contact_lambda.function_name],
+            [".", "Errors", ".", "."]
+          ]
+        }
+      },
+      {
+        type   = "metric",
+        x      = 12,
+        y      = 1,
+        width  = 12,
+        height = 6,
+        properties = {
+          title   = "Lambda Duration"
+          view    = "timeSeries"
+          stacked = false
+          region  = "us-east-1"
+          stat    = "Average"
+          period  = 300
+          metrics = [
+            ["AWS/Lambda", "Duration", "FunctionName", aws_lambda_function.visitor_lambda.function_name],
+            ["AWS/Lambda", "Duration", "FunctionName", aws_lambda_function.contact_lambda.function_name]
+          ]
+        }
+      },
+      {
+        type   = "metric",
+        x      = 0,
+        y      = 7,
+        width  = 12,
+        height = 6,
+        properties = {
+          title   = "API Gateway Requests, 4XX, 5XX"
+          view    = "timeSeries"
+          stacked = false
+          region  = "us-east-1"
+          stat    = "Sum"
+          period  = 300
+          metrics = [
+            ["AWS/ApiGateway", "Count", "ApiId", aws_apigatewayv2_api.visitor_api.id],
+            [".", "4xx", ".", "."],
+            [".", "5xx", ".", "."]
+          ]
+        }
+      },
+      {
+        type   = "metric",
+        x      = 12,
+        y      = 7,
+        width  = 12,
+        height = 6,
+        properties = {
+          title   = "API Gateway Latency"
+          view    = "timeSeries"
+          stacked = false
+          region  = "us-east-1"
+          stat    = "Average"
+          period  = 300
+          metrics = [
+            ["AWS/ApiGateway", "Latency", "ApiId", aws_apigatewayv2_api.visitor_api.id]
+          ]
+        }
+      },
+      {
+        type   = "metric",
+        x      = 0,
+        y      = 13,
+        width  = 12,
+        height = 6,
+        properties = {
+          title   = "DynamoDB User and System Errors"
+          view    = "timeSeries"
+          stacked = false
+          region  = "us-east-1"
+          stat    = "Sum"
+          period  = 300
+          metrics = [
+            ["AWS/DynamoDB", "UserErrors", "TableName", aws_dynamodb_table.visitor_table.name],
+            [".", "SystemErrors", ".", "."],
+            ["AWS/DynamoDB", "UserErrors", "TableName", aws_dynamodb_table.contact_table.name],
+            [".", "SystemErrors", ".", "."]
+          ]
+        }
+      },
+      {
+        type   = "metric",
+        x      = 12,
+        y      = 13,
+        width  = 12,
+        height = 6,
+        properties = {
+          title   = "DynamoDB Successful Request Latency"
+          view    = "timeSeries"
+          stacked = false
+          region  = "us-east-1"
+          stat    = "Average"
+          period  = 300
+          metrics = [
+            ["AWS/DynamoDB", "SuccessfulRequestLatency", "TableName", aws_dynamodb_table.visitor_table.name, "Operation", "UpdateItem"],
+            ["AWS/DynamoDB", "SuccessfulRequestLatency", "TableName", aws_dynamodb_table.contact_table.name, "Operation", "PutItem"]
+          ]
+        }
+      }
+    ]
+  })
+}
 
 resource "aws_cloudfront_origin_access_control" "oac" {
   name                              = "portfolio-oac"
