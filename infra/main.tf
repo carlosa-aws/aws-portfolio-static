@@ -134,7 +134,7 @@ resource "aws_lambda_function" "visitor_lambda" {
   function_name = "visitor-counter"
 
   runtime = "python3.11"
-  handler = "visitor.lambda_handler"
+  handler = "visitor_counter.lambda_handler"
   role    = aws_iam_role.lambda_role.arn
 
   filename         = "../lambda/visitor.zip"
