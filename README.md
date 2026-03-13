@@ -302,27 +302,26 @@ Updated site deployed worldwide
 aws-portfolio-static
 │
 ├── .github/
-│ └── workflows/
-│ └── deploy-site.yml
+│   └── workflows/
+│       └── deploy-site.yml
 │
 ├── infra/
-│ ├── main.tf
-│ └── versions.tf
+│   ├── main.tf
+│   └── versions.tf
 │
 ├── lambda/
-│ ├── visitor_counter.py
-│ └── contact_form.py
+│   ├── visitor_counter.py
+│   └── contact_form.py
 │
 ├── site/
-│ ├── index.html
-│ └── images/
+│   ├── index.html
+│   └── images/
 │
 ├── docs/
-│ └── images/
+│   └── images/
 │
 ├── .gitignore
 └── README.md
-
 
 ---
 
