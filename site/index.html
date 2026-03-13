@@ -279,6 +279,28 @@ footer {
 
 <section class="section">
   <div class="container">
+    <div class="card">
+      <h2>Architecture Diagram</h2>
+
+      <p>
+        The diagram below shows the high-level architecture used in this project.
+        CloudFront securely delivers the static site from a private S3 bucket while
+        AWS Lambda retrieves and updates the visitor count stored in DynamoDB.
+        The contact form is handled through API Gateway and Lambda, with validation
+        and basic abuse protections applied at the application layer.
+      </p>
+
+      <img class="architecture-image" src="images/01-architecture-overview.png" alt="AWS Architecture Diagram">
+
+      <p class="image-caption">
+        High-level architecture for the AWS Cloud Portfolio Project
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
     <div class="grid">
 
       <div class="card">
@@ -378,28 +400,6 @@ footer {
 
         <div id="form-status" class="form-status"></div>
       </form>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="card">
-      <h2>Architecture Diagram</h2>
-
-      <p>
-        The diagram below shows the high-level architecture used in this project.
-        CloudFront securely delivers the static site from a private S3 bucket while
-        AWS Lambda retrieves and updates the visitor count stored in DynamoDB.
-        The contact form is handled through API Gateway and Lambda, with validation
-        and basic abuse protections applied at the application layer.
-      </p>
-
-      <img class="architecture-image" src="images/01-architecture-overview.png" alt="AWS Architecture Diagram">
-
-      <p class="image-caption">
-        High-level architecture for the AWS Cloud Portfolio Project
-      </p>
     </div>
   </div>
 </section>
@@ -525,3 +525,4 @@ loadVisitorCount();
 
 </body>
 </html>
+
