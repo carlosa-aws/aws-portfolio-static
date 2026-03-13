@@ -299,6 +299,7 @@ Updated site deployed worldwide
 
 # Project Structure
 
+```
 aws-portfolio-static
 │
 ├── .github/
@@ -322,7 +323,7 @@ aws-portfolio-static
 │
 ├── .gitignore
 └── README.md
-
+```
 ---
 
 # Security Best Practices Implemented
